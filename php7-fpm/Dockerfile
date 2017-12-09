@@ -23,7 +23,6 @@ WORKDIR /var/www/lagen-api
 RUN git clone https://github.com/lagen-project/api.git /var/www/lagen-api
 RUN export APP_ENV=prod && \
     export DATABASE_PATH=var/data/data.sqlite && \
-    export APP_ENV=prod && \
     export JWT_PRIVATE_KEY_PATH='config/jwt/private.pem' && \
     export JWT_PUBLIC_KEY_PATH='config/jwt/private.pem' && \
     export JWT_PASSPHRASE="$jwt_passphrase" && \
