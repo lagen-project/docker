@@ -14,11 +14,11 @@ To ease your lagen setup, here is a docker compose file. Make it some changes to
 
 3. Make some changes to fit your needs :
 
-  - Change the JWT passphrases in `nginx/lagen-api.conf` and `php7-fpm/Dockerfile` (lines starting with `openssl` and `export JWT_PASSPHRASE`)
-  - Change the "ALLOWED_ORIGINS" in `nginx/lagen-api.conf` and `php7-fpm/Dockerfile` to fit the address you'll configure for the client
+  - Change the JWT passphrases in `nginx/lagen-api.conf` and `docker-compose.yml`
+  - Change the "ALLOWED_ORIGINS" in `nginx/lagen-api.conf` and `docker-compose.yml` to fit the address you'll configure for the client
   - Eventually change the "APP_SECRET" in `nginx/lagen-api.conf`
   - Change the "api" conf in `nginx/client-config.json` to fit the address you'll configure for the API
-  - Change the user add command in `php7-fpm/Dockerfile` so that it creates a user with the credentials you want
+  - Change the user and password in `docker-compose.yml` so that it creates a user with the credentials you want
 
 4. First build & run
 
