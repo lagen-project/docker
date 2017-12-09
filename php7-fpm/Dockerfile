@@ -23,9 +23,10 @@ RUN export APP_ENV=prod && \
     export JWT_PRIVATE_KEY_PATH='config/jwt/private.pem' && \
     export JWT_PUBLIC_KEY_PATH='config/jwt/private.pem' && \
     export JWT_PASSPHRASE="yourpassphrase" && \
-    export ALLOWED_ORIGINS="lagen.mydomain.com" && \
+    export ALLOWED_ORIGINS="http://lagen.mydomain.com" && \
     composer install --no-dev --optimize-autoloader && \
     php bin/console doctrine:database:create && \
-    php bin/console doctrine:schema:update --force
+    php bin/console doctrine:schema:update --force && \
+    php bin/console app:create-user myuser mypassword
 RUN openssl genrsa -out config/jwt/private.pem -passout pass:yourpassphrase
 RUN openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem -passin pass:yourpassphrase
