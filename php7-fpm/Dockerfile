@@ -7,7 +7,14 @@ ARG allowed_origins
 ARG user
 ARG password
 
-RUN apt-get update && apt-get install -y git unzip
+RUN apt-get update && apt-get install -y git unzip gnupg2 apt-transport-https ca-certificates software-properties-common supervisor
+RUN curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | apt-key add -
+RUN add-apt-repository -y \
+   "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
+   $(lsb_release -cs) \
+   stable"
+RUN apt-get update
+RUN apt-get install -y docker-ce
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer --version
@@ -18,19 +25,36 @@ RUN "date"
 
 RUN docker-php-ext-install pdo pdo_mysql
 
+ADD install_worker.conf /etc/supervisor/conf.d/install_worker.conf
+ADD php_fpm.conf /etc/supervisor/conf.d/php_fpm.conf
+
 WORKDIR /var/www/lagen-api
+RUN chown -R www-data:www-data .
+
+USER www-data
 
 RUN git clone https://github.com/lagen-project/api.git /var/www/lagen-api
-RUN export APP_ENV=prod && \
-    export DATABASE_PATH=var/data/data.sqlite && \
-    export JWT_PRIVATE_KEY_PATH='config/jwt/private.pem' && \
-    export JWT_PUBLIC_KEY_PATH='config/jwt/private.pem' && \
-    export JWT_PASSPHRASE="$jwt_passphrase" && \
-    export ALLOWED_ORIGINS="$allowed_origins" && \
-    composer install --no-dev --optimize-autoloader && \
-    mkdir -p var/data config/jwt && \
-    php bin/console doctrine:database:create && \
-    php bin/console doctrine:schema:update --force && \
-    php bin/console app:create-user $user $password
+
+ENV APP_ENV prod
+ENV DATABASE_PATH var/data/data.sqlite
+ENV JWT_PRIVATE_KEY_PATH 'config/jwt/private.pem'
+ENV JWT_PUBLIC_KEY_PATH 'config/jwt/private.pem'
+ENV JWT_PASSPHRASE "$jwt_passphrase"
+ENV ALLOWED_ORIGINS "$allowed_origins"
+
+RUN composer install --no-dev --optimize-autoloader
+RUN mkdir -p var/data config/jwt
+RUN php bin/console doctrine:database:create
+RUN php bin/console doctrine:schema:update --force
+RUN php bin/console app:user:create $user $password
 RUN openssl genrsa -out config/jwt/private.pem -passout pass:$jwt_passphrase
 RUN openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem -passin pass:$jwt_passphrase
+RUN ./bin/console cache:warmup --env=prod
+RUN chown -R www-data:www-data var
+
+USER root
+
+RUN usermod -aG docker root
+RUN usermod -aG docker www-data
+
+CMD ["/usr/bin/supervisord", "-n"]

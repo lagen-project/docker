@@ -14,6 +14,7 @@ services:
             - 9000:9000
         volumes:
             - api:/var/www/lagen-api
+        tty: true
     nginx:
         build: nginx
         ports:
@@ -21,7 +22,7 @@ services:
             - 4243:81
         links:
             - php
-        volumes_from:
-            - php
+        volumes:
+            - api:/var/www/lagen-api
 volumes:
-    api:
+    api: {}
