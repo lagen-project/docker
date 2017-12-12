@@ -64,6 +64,7 @@ RUN "date"
 RUN docker-php-ext-install pdo pdo_mysql
 
 # Setup supervisor conf
+ADD supervisord.conf /etc/supervisor/supervisord.conf
 ADD install_worker.conf /etc/supervisor/conf.d/install_worker.conf
 ADD php_fpm.conf /etc/supervisor/conf.d/php_fpm.conf
 ADD sup_nginx.conf /etc/supervisor/conf.d/nginx.conf
@@ -96,9 +97,11 @@ RUN ./bin/console cache:warmup --env=prod
 RUN chown -R www-data:www-data var
 USER root
 
-# Put root and www-data in docker group
+# Put root and www-data in docker and supervisor group
+RUN addgroup --system supervisor
 RUN usermod -aG docker root
 RUN usermod -aG docker www-data
+RUN usermod -aG supervisor www-data
 
 EXPOSE 80
 EXPOSE 81
