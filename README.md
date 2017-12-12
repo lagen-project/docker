@@ -20,27 +20,10 @@ To ease your lagen setup, here is a docker compose file. Make it some changes to
   - Change the "api" conf in `nginx/client-config.json` to fit the address you'll configure for the API
   - Change the user and password in `docker-compose.yml` so that it creates a user with the credentials you want
 
-#### 4. First build & run
+#### 4. Build & run
 
   ```bash
     docker-compose build && docker-compose up
   ```
 
-#### 5. Get the PHP's instance IP address
-
-  ```bash
-    docker inspect --format '' $(docker ps -f name=php -q) | grep IPAddress
-  ```
-
-#### 6. Finalize Nginx conf
-
-  Replace the `fastcgi_pass` line with the given IP address
-
-#### 7. Restart
-
-  Hit ^C and rerun
-  ```bash
-    docker-compose build && docker-compose up
-  ```
-
-#### 8. Now you can point API and client domain names on localhost, with ports 4242 (API) and 4243 (client). Enjoy.
+#### 5. Now you can point API and client domain names on localhost, with ports 4242 (API) and 4243 (client). Enjoy.

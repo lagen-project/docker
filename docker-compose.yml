@@ -1,28 +1,15 @@
 version: '2'
 
 services:
-    php:
-        image: php7-fpm
+    lagen:
+        image: nginx
         build:
-            context: php7-fpm
+            context: nginx
             args:
                 jwt_passphrase: "mypassphrase"
                 allowed_origins: "http://lagen.mydomain.com"
                 user: "myuser"
                 password: "mypassword"
         ports:
-            - 9000:9000
-        volumes:
-            - api:/var/www/lagen-api
-        tty: true
-    nginx:
-        build: nginx
-        ports:
             - 4242:80
             - 4243:81
-        links:
-            - php
-        volumes:
-            - api:/var/www/lagen-api
-volumes:
-    api: {}
