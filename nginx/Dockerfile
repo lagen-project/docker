@@ -2,7 +2,7 @@ FROM php:7.1-fpm
 
 MAINTAINER Pierre ROLLAND <roll.pierre@gmail.com>
 
-# Retrieves arguments
+# Retrieve arguments
 ARG jwt_passphrase
 ARG allowed_origins
 ARG user
@@ -68,6 +68,7 @@ ADD supervisord.conf /etc/supervisor/supervisord.conf
 ADD install_worker.conf /etc/supervisor/conf.d/install_worker.conf
 ADD php_fpm.conf /etc/supervisor/conf.d/php_fpm.conf
 ADD sup_nginx.conf /etc/supervisor/conf.d/nginx.conf
+ADD permissions.conf /etc/supervisor/conf.d/permissions.conf
 
 # Install client
 WORKDIR /var/www/lagen-client
@@ -102,6 +103,8 @@ RUN addgroup --system supervisor
 RUN usermod -aG docker root
 RUN usermod -aG docker www-data
 RUN usermod -aG supervisor www-data
+RUN chown www-data /root
+RUN chown www-data /var/run
 
 EXPOSE 80
 EXPOSE 81
